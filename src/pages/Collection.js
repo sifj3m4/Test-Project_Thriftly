@@ -26,8 +26,6 @@ function Collection() {
   const [error, setError] = useState("");
   const [search, setSearch] = useState(initialQuery);
   const [filter, setFilter] = useState(null);
-  const [_page] = useState(1);
-  const _pageSize = 6;
   const { favorites, toggleFavorite } = useFavorite();
   const { addToCart } = useCart();
 
