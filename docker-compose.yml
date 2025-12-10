@@ -1,4 +1,5 @@
 version: "3.9"
+
 services:
   web:
     build: .
@@ -8,5 +9,38 @@ services:
     volumes:
       - .:/app
       - /app/node_modules
+      - ./logs:/var/log/app
     stdin_open: true
     tty: true
+    depends_on:
+      - loki
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: thriftly-grafana
+    ports:
+      - "3001:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      - loki
+
+  loki:
+    image: grafana/loki:2.9.4
+    container_name: thriftly-loki
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+
+  promtail:
+    image: grafana/promtail:2.9.4
+    container_name: thriftly-promtail
+    volumes:
+      - ./logs:/var/log/app
+      - ./promtail-config.yml:/etc/promtail/config.yml
+    command: -config.file=/etc/promtail/config.yml
+    depends_on:
+      - loki
+
+volumes:
+  grafana-data:
